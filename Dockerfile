@@ -2,11 +2,11 @@
 # we can change the UID of the JENKINS user to something more amenable
 
 FROM java:openjdk-7u65-jdk
-RUN apt-get update && apt-get install -y wget git curl zip && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y wget git curl zip # && rm -rf /var/lib/apt/lists/*
 ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_UID 2000
 # Jenkins is ran with user `jenkins`, uid = JENKINS_UID
-# If you bind mount a volume from host/vloume from a data container,
+# If you bind mount a volume from host/volume from a data container,
 # ensure you use same uid
 RUN useradd -d "$JENKINS_HOME" -u "$JENKINS_UID" -m -s /bin/bash jenkins
 
@@ -32,6 +32,26 @@ EXPOSE 50000
 
 # Handle python deps
 RUN curl -L https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && python /tmp/get-pip.py
+COPY python-requirements.txt /
+RUN pip install -r python-requirements.txt
+
+# Handle apt deps
+COPY apt-requirements.txt /
+RUN apt-get install -y $(cat apt-requirements.txt) # && rm -rf /var/lib/apt/lists/*
+
+# Install script to set up python build environment
+COPY setup_virtualenv.sh /usr/local/bin/
+RUN chmod a+rx /usr/local/bin/setup_virtualenv.sh
+
+# Experimental hack to allow jenkins user to sudo
+
+RUN adduser jenkins sudo
+RUN apt-get install sudo #&& rm -rf /var/lib/apt/lists/*
+
+RUN echo 'jenkins:blah' | chpasswd
+
+COPY jenkins-apt-sudoers /etc/sudoers.d/
+RUN chmod 0440 /etc/sudoers.d/jenkins-apt-sudoers
 
 USER jenkins
 COPY jenkins.sh /usr/local/bin/jenkins.sh

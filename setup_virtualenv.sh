@@ -87,5 +87,5 @@ if [ -f "${SETUP}" ]
 then
         cd "${DEST_PATH}"
         # Install with dependencies.
-        python "$(which pip)" install --trusted-host pypi.camlab.kat.ac.za --pre -U .
+        python "$(which pip)" install --trusted-host pypi.camlab.kat.ac.za --pre .
 fi

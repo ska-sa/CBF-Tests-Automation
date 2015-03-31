@@ -6,7 +6,7 @@
 
 set -e 				# Abort on any errors
 
-PY_PKG_LIST="nose mock coverage nosexcover pep8"
+PY_PKG_LIST="nose mock coverage nosexcover pep8 pylint"
 
 function install_pip_requirements {
 FILENAME=$1                  # Filename to read requirements from.

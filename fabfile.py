@@ -7,13 +7,15 @@ CONFIG_GIT_REPO = 'nmarais@katfs.kat.ac.za:~nmarais/cbf-jenkins-config'
 @task
 def setup_jenkins_user():
     sudo('useradd -d "{JENKINS_HOME}" -u {JENKINS_UID} '
-         '-m -s /bin/bash jenkins'.format(**globals()))
+         '-m -s /bin/false jenkins'.format(**globals()))
+    sudo('chmod -R o-xrw /home/jenkins')
 
 @task
 def checkout_cbf_jenkins_config():
     with cd(JENKINS_HOME):
         sudo('git init .', user='jenkins')
-        sudo('git config --local push.default simple', user='jenkins')
+        # This does not work with older versions of git.
+        # sudo('git config --local push.default simple', user='jenkins')
         sudo('git config --local user.email "fake-jenkins-user@ska.ac.za.fake"',
              user='jenkins')
         sudo('git config --local user.name "CBF Jenkins automaton"',

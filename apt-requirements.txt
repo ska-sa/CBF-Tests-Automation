@@ -1,2 +1,5 @@
+wget 
+git
+curl
+zip
 cloc
-

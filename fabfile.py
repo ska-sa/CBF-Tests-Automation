@@ -2,13 +2,13 @@ from fabric.api import task, sudo, run, cd, local, env, warn_only, get
 
 JENKINS_UID = 2000
 JENKINS_HOME = '/home/jenkins'
-CONFIG_GIT_REPO = 'nmarais@katfs.kat.ac.za:~nmarais/cbf-jenkins-config'
+CONFIG_GIT_REPO = 'nmarais@katfs.kat.ac.za:~nmarais/cbf-jenkins-config.git'
 
 @task
 def setup_jenkins_user():
     sudo('useradd -d "{JENKINS_HOME}" -u {JENKINS_UID} '
          '-m -s /bin/false jenkins'.format(**globals()))
-    sudo('chmod -R o-xrw /home/jenkins')
+    sudo('chmod -R o-xrw {JENKINS_HOME}'.format(**globals()))
 
 @task
 def checkout_cbf_jenkins_config():

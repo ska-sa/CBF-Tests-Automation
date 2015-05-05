@@ -2,7 +2,6 @@
 # we can change the UID of the JENKINS user to something more amenable, otherwise
 # we could just have done FROM jenkins:{version}
 
-ENV_DISTRO_UPDATED_ON 2015-05-05
 FROM java:openjdk-7-jdk
 MAINTAINER Neilen Marais <nmarais@ska.ac.za>
 ENV UPDATED_ON 2015-04-02

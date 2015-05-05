@@ -1,6 +1,5 @@
 # Based partially on https://github.com/carlossg/jenkins-swarm-slave-docker
 
-ENV_DISTRO_UPDATED_ON 2015-05-05
 FROM java:openjdk-7-jdk
 MAINTAINER Neilen Marais <nmarais@ska.ac.za>
 ENV UPDATED_ON 2015-05-05
@@ -25,7 +24,7 @@ ENV JENKINS_SLAVE_UID 3000
 # Slave jobs run with user `slave`, uid = JENKINS_SLAVE_UID
 # If you bind mount a volume from host/volume from a data container,
 # ensure you use same uid
-RUN useradd -c "Jenkins Slave user" -d "$JENKINS_SLAVE_HOME" -u "$JENKINS_SLAVE_UID" -m -s /bin/bash jenkins
+RUN useradd -c "Jenkins Slave user" -d "$JENKINS_SLAVE_HOME" -u "$JENKINS_SLAVE_UID" -m -s /bin/bash jenkins-slave
 
 ## Allow jenkins user to use sudo to perform a limited subset of commands
 # without a password such as installing new packages.

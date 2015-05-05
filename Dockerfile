@@ -2,12 +2,14 @@
 # we can change the UID of the JENKINS user to something more amenable, otherwise
 # we could just have done FROM jenkins:{version}
 
+ENV_DISTRO_UPDATED_ON 2015-05-05
 FROM java:openjdk-7-jdk
 MAINTAINER Neilen Marais <nmarais@ska.ac.za>
 ENV UPDATED_ON 2015-04-02
 
 # Handle apt deps
 COPY apt-requirements.txt /
+# Leave /apt/lists so that tests can install packages as needed
 RUN apt-get update && apt-get install -y $(cat apt-requirements.txt) # && rm -rf /var/lib/apt/lists/*
 
 
@@ -30,8 +32,7 @@ RUN useradd -d "$JENKINS_HOME" -u "$JENKINS_UID" -m -s /bin/bash jenkins
 ## Allow jenkins user to use sudo to perform a limited subset of commands
 # without a password such as installing new packages.
 RUN adduser jenkins sudo
-# Leave /apt/lists so that tests can install packages as needed
-RUN apt-get install sudo #&& rm -rf /var/lib/apt/lists/*
+
 COPY jenkins-apt-sudoers /etc/sudoers.d/
 RUN chmod 0440 /etc/sudoers.d/jenkins-apt-sudoers
 

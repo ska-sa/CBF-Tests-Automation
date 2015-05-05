@@ -1,0 +1,47 @@
+# Based partially on https://github.com/carlossg/jenkins-swarm-slave-docker
+
+ENV_DISTRO_UPDATED_ON 2015-05-05
+FROM java:openjdk-7-jdk
+MAINTAINER Neilen Marais <nmarais@ska.ac.za>
+ENV UPDATED_ON 2015-05-05
+
+# Handle apt deps
+COPY apt-requirements.txt /
+# Leave /apt/lists so that tests can install packages as needed
+RUN apt-get update && apt-get install -y $(cat apt-requirements.txt) # && rm -rf /var/lib/apt/lists/*
+
+
+# Handle python deps
+RUN curl -L https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && python /tmp/get-pip.py
+COPY python-requirements.txt /
+RUN pip install -r python-requirements.txt
+
+# Install script to set up python build environment
+COPY setup_virtualenv.sh /usr/local/bin/
+RUN chmod a+rx /usr/local/bin/setup_virtualenv.sh
+
+ENV JENKINS_SLAVE_HOME /home/jenkins-slave
+ENV JENKINS_SLAVE_UID 3000
+# Slave jobs run with user `slave`, uid = JENKINS_SLAVE_UID
+# If you bind mount a volume from host/volume from a data container,
+# ensure you use same uid
+RUN useradd -c "Jenkins Slave user" -d "$JENKINS_SLAVE_HOME" -u "$JENKINS_SLAVE_UID" -m -s /bin/bash jenkins
+
+## Allow jenkins user to use sudo to perform a limited subset of commands
+# without a password such as installing new packages.
+RUN adduser jenkins-slave sudo
+
+COPY jenkins-apt-sudoers /etc/sudoers.d/
+RUN chmod 0440 /etc/sudoers.d/jenkins-apt-sudoers
+
+ENV JENKINS_SWARM_VERSION 1.22
+
+RUN curl --create-dirs -sSLo /usr/share/jenkins/swarm-client-$JENKINS_SWARM_VERSION-jar-with-dependencies.jar http://maven.jenkins-ci.org/content/repositories/releases/org/jenkins-ci/plugins/swarm-client/$JENKINS_SWARM_VERSION/swarm-client-$JENKINS_SWARM_VERSION-jar-with-dependencies.jar \
+  && chmod 755 /usr/share/jenkins
+
+COPY jenkins-slave.sh /usr/local/bin/jenkins-slave.sh
+
+USER jenkins-slave
+
+ENTRYPOINT ["/usr/local/bin/jenkins.sh"]
+

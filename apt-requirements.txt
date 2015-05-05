@@ -3,3 +3,4 @@ git
 curl
 zip
 cloc
+sudo

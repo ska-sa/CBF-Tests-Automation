@@ -7,7 +7,7 @@ ENV UPDATED_ON 2015-05-05
 # Handle apt deps
 COPY apt-requirements.txt /
 # Leave /apt/lists so that tests can install packages as needed
-RUN apt-get update && apt-get install -y $(cat apt-requirements.txt) # && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y $(cat apt-requirements.txt) net-tools # && rm -rf /var/lib/apt/lists/*
 
 
 # Handle python deps
@@ -30,8 +30,8 @@ RUN useradd -c "Jenkins Slave user" -d "$JENKINS_SLAVE_HOME" -u "$JENKINS_SLAVE_
 # without a password such as installing new packages.
 RUN adduser jenkins-slave sudo
 
-COPY jenkins-apt-sudoers /etc/sudoers.d/
-RUN chmod 0440 /etc/sudoers.d/jenkins-apt-sudoers
+COPY slave-apt-sudoers /etc/sudoers.d/
+RUN chmod 0440 /etc/sudoers.d/slave-apt-sudoers
 
 ENV JENKINS_SWARM_VERSION 1.22
 
@@ -42,5 +42,5 @@ COPY jenkins-slave.sh /usr/local/bin/jenkins-slave.sh
 
 USER jenkins-slave
 
-ENTRYPOINT ["/usr/local/bin/jenkins-slave.sh"]
+ENTRYPOINT ["/usr/local/bin/jenkins-slave.sh", "-password", "bitnami", "-username", "user", "-labels", "fpgas", "-executors", "1"]
 

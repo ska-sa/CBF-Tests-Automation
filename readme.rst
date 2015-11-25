@@ -2,17 +2,22 @@
 CBF Jenkins Test Docker 
 =======================
 
-Define a Dockerfile that can build a docker instance useful for running CBF
-Jenkins tests.
+Define a Dockerfiles that can build a docker instances useful for running CBF
+Jenkins tests. The files are:
 
-It assumes that the jenkins config/home directory is mounted on the container
-volume `/var/jenkins_home`, which should be owned by UID=2000. E.g., to start it
-with $JENKINS_HOME stored in /home/jenkins on the host machine, exposed on a
-random TCP port:
+Dockerfile
+  Builds a Jenkins master-server instance. This runs the Jenkins web frontend,
+  schedules builds, checks source repositories for changes, and can run certain
+  jobs on slaves.
+ 
+  It assumes that the jenkins config/home directory is mounted on the container
+  volume `/var/jenkins_home`, which should be owned by UID=2000.
 
-  ::
-     sudo docker build -t ska-sa-cbf/jenkins .
-     sudo docker run -P -d -v /home/jenkins:/var/jenkins_home ska-sa-cbf/jenkins
+Dockerfile_fpga_slave
+  Docker slave for running tests on the CBF that needs to capture data from the
+  FPGAs. Should be configured to have access to the physical 10/40GbE
+  interface. 
+
 
 Howtos
 ======
@@ -30,10 +35,17 @@ Set up the host
    <wheezy_host_setup>`
 
 2. Fix DNS config if you use a localhost dnsmasq (like Ubuntu's using
-   NetworkManager, or correlator controller servers) by adding to the
-   `/etc/default/docker` file ::
+   NetworkManager) by adding the SKA SA DNS servers to the `/etc/default/docker`
+   file ::
 
     DOCKER_OPTS="--dns 196.24.41.8 --dns 196.24.41.9"
+
+   of if using dnsmasq to find the roaches with dnsmasq bound to the roach
+   control network interface as on the correlator controller servers, where
+   `10.103.0.1` is the IP address of the roach control network interface
+   (usually eth1) ::
+
+    DOCKER_OPTS="--dns 10.103.0.1"
 
 Set up a Jenkins user and data volume
 -------------------------------------
@@ -64,7 +76,8 @@ containers and volumes, but this is a simple one :)
 
 2. Start the jenkins service by running ::
 
-    sudo docker run --name=jenkins --restart=on-failure:10 -d -p 8080:8080\
+    sudo docker run --name=jenkins --restart=on-failure:10 -d\
+        -p 8080:8080 -p 50000:50000\
         -v /home/jenkins:/var/jenkins_home ska-sa-cbf/jenkins
 	
    This will create a container using the docker image we just built named
@@ -75,16 +88,31 @@ containers and volumes, but this is a simple one :)
    and it will automatically be restarted up to 10 times if it exits with an
    error condition. Modify the `--restart` parameter to change this behaviour.
 
-   The Jenkins web interface will be exposed on port 8080 of all the
-   host network interfaces. Modify the `-p` parameter to `-p ${host_port}:8080`
-   to use a different port, or consult the docker documentation for limiting it
-   to specific interfaces.
+   The Jenkins web interface will be exposed on port 8080 of all the host
+   network interfaces. Modify the `-p` parameter to `-p ${host_port}:8080` to
+   use a different port, or consult the docker documentation for limiting it to
+   specific interfaces. Similarly, the 'slave' interface is exposed on
+   port 50000.
 
    The container data volume `/var/jenkins_home` will be linked to the
    `/home/jenkins` directory on the host. This directory should be owned by the
    `jenkins` user. It is recommended that it not be world readable since the
    jenkins configuration might contain sensitive information and it seems
    Jenkins itself is not too smart about using appropriate permissions.
+
+
+.. _deploy_jenkins_slave_container:
+
+Deploy the Jenkins slave container on the host
+----------------------------------------------
+
+Assuming the name of the jenkins master container is stored in $JENKINS_MASTER
+(we used `jenkins` as the name in the previous section):
+
+::
+  sudo docker build -t ska-sa-cbf/jenkins-slave -f Dockerfile_fpga_slave .
+  sudo docker run -d --hostname jenkins-slave --link $JENKINS_MASTER:jenkins\
+   --name jenkins-slave ska-sa-cbf/jenkins-slave
 
 
 .. _wheezy_host_setup:
@@ -94,13 +122,18 @@ Upgrade / rebuild the Jenkins container
 
 The Jenkins version is pegged in the Docker file using the `JENKINS_VERSION` env
 variable. To upgrade the Jenkins version, edit `JENKINS_VERSION` in `Dockerfile`
-to the desired version. To force an update of the container to get e.g. security updates, modify the
-`UPDATED_ON` environment variable. Then follow the :ref:`deploy_jenkins_container`
-instructions, but before doing the `docker run` command, stop and delete the
-current Jenkins container ::
+to the desired version. To force an update of the container to get e.g. newer
+versions of Python dependencies, modify the `UPDATED_ON` environment
+variable. Then follow the :ref:`deploy_jenkins_container` instructions, but
+before doing the `docker run` command, stop and delete the current Jenkins
+container ::
 
   sudo docker stop jenkins
   sudo docker rm jenkins # Deletes the current jenkins container
+
+Similarly, to update the base distribution image (current debian + openjdk-7 in
+our Dockerfiles) to get e.g. security updates, add `--pull=true` to the `docker
+build` command line.
 
 
 Installing docker on Debian Wheezy

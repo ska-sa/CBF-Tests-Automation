@@ -82,6 +82,12 @@ install_pip_requirements pip-build-requirements.txt false
 # Previously had the install of self in the pip-build-requirements.txt 
 # as a line with a '.'. That worked but on occasion we got wierd errors.
 
+PRE_SETUP="${DEST_PATH}/pre_setup.sh"
+if [ -f "${PRE_SETUP}" ]
+then
+    "${PRE_SETUP}"
+fi
+
 SETUP="${DEST_PATH}/setup.py"
 if [ -f "${SETUP}" ]
 then

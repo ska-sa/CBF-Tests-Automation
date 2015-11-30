@@ -4,7 +4,7 @@
 # Note: Must be a bash shell.
 # eg. . ./opt/kattrap/bin/setup_virtualenv.sh
 
-set -e 				# Abort on any errors
+set -e              # Abort on any errors
 
 PY_PKG_LIST="nose mock coverage nosexcover pep8 pylint"
 
@@ -25,7 +25,7 @@ then
         python "$(which pip)" install --trusted-host pypi.camlab.kat.ac.za --pre $line
         echo -n "."
     done
-fi                           # do nothing if file is not found.           
+fi                           # do nothing if file is not found.
 }
 
 function install_apt_requirements {
@@ -40,7 +40,7 @@ then
                 echo "!!! into apt-build-requirements.txt"
         fi
     sudo apt-get install -yfm $(cat $FILENAME)
-fi                           # do nothing if file is not found.           
+fi                           # do nothing if file is not found.
 }
 
 # MAIN
@@ -72,6 +72,13 @@ then
 fi
 
 install_apt_requirements apt-build-requirements.txt false
+PRE_PIP_INSTALL="${DEST_PATH}/pre_pip_install.sh"
+if [ -f "${PRE_PIP_INSTALL}" ]
+then
+    echo 'Running pre pip install'
+    "${PRE_PIP_INSTALL}"
+fi
+
 python "$(which pip)" install -U $PY_PKG_LIST
 install_pip_requirements system-requirements.txt true
 install_pip_requirements requirements.txt true
@@ -79,7 +86,7 @@ install_pip_requirements pip-build-requirements.txt false
 
 # Install Self.
 # If the given DEST_PATH contains a setup.py we will install it.
-# Previously had the install of self in the pip-build-requirements.txt 
+# Previously had the install of self in the pip-build-requirements.txt
 # as a line with a '.'. That worked but on occasion we got wierd errors.
 
 PRE_SETUP="${DEST_PATH}/pre_setup.sh"

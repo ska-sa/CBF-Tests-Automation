@@ -58,8 +58,8 @@ test -x $DAEMON || exit 1
 case $1 in
    start)
        log_daemon_msg "Starting jenkins-swarm-client"
+       echo "exec $DAEMON $ARGS >  $LOG 2>&1"
        start-stop-daemon --start --chuid $USER --background --make-pidfile --pidfile $PIDFILE --startas /bin/bash -- -c "exec $DAEMON $ARGS >  $LOG 2>&1"
- 
        log_end_msg $?
        ;;
    stop)

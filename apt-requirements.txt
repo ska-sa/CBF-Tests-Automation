@@ -1,6 +1,7 @@
-wget 
+wget
 git
 curl
 zip
 cloc
 sudo
+nano

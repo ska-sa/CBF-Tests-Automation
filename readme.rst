@@ -1,5 +1,5 @@
 =======================
-CBF Jenkins Test Docker 
+CBF Test [Jenkins & Docker]
 =======================
 
 Define a Dockerfiles that can build a docker instances useful for running CBF
@@ -9,14 +9,14 @@ Dockerfile
   Builds a Jenkins master-server instance. This runs the Jenkins web frontend,
   schedules builds, checks source repositories for changes, and can run certain
   jobs on slaves.
- 
+
   It assumes that the jenkins config/home directory is mounted on the container
   volume `/var/jenkins_home`, which should be owned by UID=2000.
 
 Dockerfile_fpga_slave
   Docker slave for running tests on the CBF that needs to capture data from the
   FPGAs. Should be configured to have access to the physical 10/40GbE
-  interface. 
+  interface.
 
 
 Howtos
@@ -55,11 +55,11 @@ store the Jenkins configuration. This volume should be owned by a `jenkins` user
 with UID 2000 (as configured in `Dockerfile`). It is recommended that the volume
 (if stored on the host) should not be world readable since the jenkins
 configuration might contain sensitive information and it seems Jenkins itself is
-not too smart about using appropriate permissions.  
+not too smart about using appropriate permissions.
 
 If using the default CBF config, the `setup_jenkins_user` and
 `checkout_cbf_jenkins_config` :ref:`fabric commands <fabric_utilities>` included
-in this repository. They should also set up permissions appropriately. 
+in this repository. They should also set up permissions appropriately.
 
 .. _deploy_jenkins_container:
 
@@ -79,7 +79,7 @@ containers and volumes, but this is a simple one :)
     sudo docker run --name=jenkins --restart=on-failure:10 -d\
         -p 8080:8080 -p 50000:50000\
         -v /home/jenkins:/var/jenkins_home ska-sa-cbf/jenkins
-	
+
    This will create a container using the docker image we just built named
    `jenkins` as a daemon.  It should be visible in the list if the `sudo docker
    ps` command is run
@@ -140,7 +140,7 @@ Installing docker on Debian Wheezy
 ----------------------------------
 
 Extra steps only needed when installing on Debian Wheezy; newer versions have
-per-packaged docker.io love. 
+per-packaged docker.io love.
 
 Add the wheezy backports repository so that a new-enough kernel can be installed
 for docker by placing into `/etc/apt/sources.list.d/wheezy-backports.list` ::
@@ -162,7 +162,7 @@ method you use) ::
     # From https://get.docker.com/ script
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
       --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
-    sudo sh -c "echo deb https://get.docker.com/ubuntu docker main \ 
+    sudo sh -c "echo deb https://get.docker.com/ubuntu docker main \
       > /etc/apt/sources.list.d/docker.list"
     sudo apt-get update && sudo apt-get install lxc-docker
 
@@ -184,4 +184,4 @@ in the current repository directory ::
   fab -H user@dbe-host0 setup_jenkins_user
   fab -H user@dbe-host0 checkout_cbf_jenkins_config
 
- 
+

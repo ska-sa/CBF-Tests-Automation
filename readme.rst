@@ -39,6 +39,7 @@ Set up the host
    file ::
 
     DOCKER_OPTS="--dns 196.24.41.8 --dns 196.24.41.9"
+    DOCKER_OPTS="--dns 8.8.8.8 --dns 8.8.4.4 --dns 196.24.41.8 --dns 196.24.41.9 --dns 192.168.1.21"
 
    of if using dnsmasq to find the roaches with dnsmasq bound to the roach
    control network interface as on the correlator controller servers, where

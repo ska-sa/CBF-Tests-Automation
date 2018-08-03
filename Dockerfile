@@ -2,19 +2,16 @@
 # we can change the UID of the JENKINS user to something more amenable, otherwise
 # we could just have done FROM jenkins:{version}
 
-FROM java:openjdk-7-jdk
-MAINTAINER Neilen Marais <nmarais@ska.ac.za>
-ENV UPDATED_ON 2015-04-02
+FROM java:openjdk-8-jdk
+MAINTAINER Mpho Mphego <mmphego@ska.ac.za>
 
 # Handle apt deps
 COPY apt-requirements.txt /
-# Leave /apt/lists so that tests can install packages as needed
-RUN apt-get update && apt-get install -y $(cat apt-requirements.txt) # && rm -rf /var/lib/apt/lists/*
-
+RUN apt-get update && apt-get install -y $(grep -vE "^\s*#" apt-requirements.txt | tr "\n" " ")
 
 # Handle python deps
-RUN curl -L https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && python /tmp/get-pip.py
 COPY python-requirements.txt /
+RUN curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && python /tmp/get-pip.py
 RUN pip install -r python-requirements.txt
 
 # Install script to set up python build environment
@@ -48,7 +45,7 @@ COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-angent-port.groo
 ENV JENKINS_VERSION 2.62
 # could use ADD but this one does not check Last-Modified header
 # see https://github.com/docker/docker/issues/8331
-RUN curl -L http://mirrors.jenkins-ci.org/war/2.62/jenkins.war -o /usr/share/jenkins/jenkins.war
+RUN axel -q -n 100 http://mirrors.jenkins-ci.org/war/${JENKINS_VERSION}/jenkins.war -o /usr/share/jenkins/jenkins.war
 ENV JENKINS_UC https://updates.jenkins-ci.org
 RUN chown -R jenkins "$JENKINS_HOME" /usr/share/jenkins/ref
 # for main web interface:

@@ -7,7 +7,8 @@ MAINTAINER Mpho Mphego <mmphego@ska.ac.za>
 
 # Handle apt deps
 COPY apt-requirements.txt /
-RUN apt-get update && apt-get install -y $(grep -vE "^\s*#" apt-requirements.txt | tr "\n" " ")
+RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
+RUN apt-get install -y $(grep -vE "^\s*#" apt-requirements.txt | tr "\n" " ")
 
 # Handle python deps
 COPY python-requirements.txt /

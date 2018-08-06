@@ -3,7 +3,6 @@ from fabric.api import task, sudo, run, cd, local, env, warn_only, get
 JENKINS_UID = 2000
 JENKINS_HOME = '/home/jenkins'
 CONFIG_GIT_REPO = 'git@github.com:ska-sa/CBF-Tests-Automation.git'
-#CONFIG_GIT_REPO = 'nmarais@katfs.kat.ac.za:~nmarais/cbf-jenkins-config.git'
 
 @task
 def setup_jenkins_user():

@@ -1,3 +1,4 @@
+apt-transport-https
 wget
 git
 curl

@@ -3,6 +3,8 @@ export JENKINS_USER=jenkins
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  install		to install Python dependencies."
+	@echo "  docker			to build a docker container"
+	@echo "  fabric			to configure jenkins local volume"
 	@echo "  build			to build a docker container and configure jenkins local volume"
 	@echo "  run 			to run pre-built jenkins container"
 	@echo "  start  		to start an existing jenkins container"
@@ -16,10 +18,14 @@ install:
 	pip install --user fabric==1.12.2
 	export PATH=${HOME}/.local/bin:${PATH}
 
-build:
+docker:
 	@docker build -t ska-sa-cbf/${JENKINS_USER} .
+
+fabric:
 	@fab setup_jenkins_user
 	@fab -u ${USER} checkout_cbf_jenkins_config
+
+build: docker fabric
 
 run:
 	@docker run -d --name=${JENKINS_USER} --env JAVA_OPTS="-Xmx8192m" -p 8080:8080 -p 50000:50000 -v /home/${JENKINS_USER}:/var/jenkins_home ska-sa-cbf/${JENKINS_USER}

@@ -2,3 +2,5 @@
 # Python droppings
 *.pyc
 .ropeproject
+.env
+.venv

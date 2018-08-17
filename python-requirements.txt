@@ -1,3 +1,0 @@
-# Note, these packages are the ones required to be installed on the Jenkins
-# server, not the ones needed by the individual tests.
-virtualenv

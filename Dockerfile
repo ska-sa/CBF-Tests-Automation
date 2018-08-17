@@ -11,9 +11,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 RUN apt-get install -y $(grep -vE "^\s*#" apt-requirements.txt | tr "\n" " ")
 
 # Handle python deps
-COPY python-requirements.txt /
 RUN curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && python /tmp/get-pip.py
-RUN pip install -r python-requirements.txt
+RUN pip install -U virtualenv
 
 # Install script to set up python build environment
 COPY setup_virtualenv.sh /usr/local/bin/

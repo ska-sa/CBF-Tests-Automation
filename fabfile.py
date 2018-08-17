@@ -62,3 +62,4 @@ def checkout_cbf_jenkins_config():
             sudo('git fetch', user="{JENKINS_USER}".format(**globals()))
             sudo('git checkout master -f ', user="{JENKINS_USER}".format(**globals()))
             sudo('git pull -f ', user="{JENKINS_USER}".format(**globals()))
+            sudo('git config --global push.default simple ', user="{JENKINS_USER}".format(**globals()))

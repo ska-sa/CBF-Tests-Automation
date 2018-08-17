@@ -49,15 +49,16 @@ def setup_jenkins_user():
 def checkout_cbf_jenkins_config():
     print ("This section assumes that {} has SUDO rights and, ".format(os.environ['USER']))
     print ("That you successfully added jenkins ssh public keys to your Github account.")
-    with cd(JENKINS_HOME) and settings(warn_only=True):
-        sudo('git init .', user="{JENKINS_USER}".format(**globals()))
-        sudo('git config --local user.email "fake-jenkins-user@ska.ac.za.fake"',
-            user="{JENKINS_USER}".format(**globals()))
-        sudo('git config --local user.name "CBF Jenkins automaton"',
-            user="{JENKINS_USER}".format(**globals()))
-        sudo('git remote add origin {CONFIG_GIT_REPO}'.format(**globals()),
+    with settings(warn_only=True):
+        with cd(JENKINS_HOME):
+            sudo('git init .', user="{JENKINS_USER}".format(**globals()))
+            sudo('git config --local user.email "fake-jenkins-user@ska.ac.za.fake"',
                 user="{JENKINS_USER}".format(**globals()))
-        print("This will take a while, go make yourself a cup of coffee!!!")
-        sudo('git fetch', user="{JENKINS_USER}".format(**globals()))
-        sudo('git checkout master -f ', user="{JENKINS_USER}".format(**globals()))
-        sudo('git pull -f ', user="{JENKINS_USER}".format(**globals()))
+            sudo('git config --local user.name "CBF Jenkins automaton"',
+                user="{JENKINS_USER}".format(**globals()))
+            sudo('git remote add origin {CONFIG_GIT_REPO}'.format(**globals()),
+                    user="{JENKINS_USER}".format(**globals()))
+            print("This will take a while, go make yourself a cup of coffee!!!")
+            sudo('git fetch', user="{JENKINS_USER}".format(**globals()))
+            sudo('git checkout master -f ', user="{JENKINS_USER}".format(**globals()))
+            sudo('git pull -f ', user="{JENKINS_USER}".format(**globals()))

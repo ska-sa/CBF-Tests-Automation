@@ -44,6 +44,7 @@ def setup_jenkins_user():
         print("Paste your ssh public key to your `GitHub ssh keys` in order to access private repos...")
         print("Open link in your browser: https://github.com/settings/ssh/new\n")
         sudo('cat {JENKINS_HOME}/.ssh/id_rsa.pub'.format(**globals()))
+        sudo('ssh-keyscan -t rsa github.com >> {JENKINS_HOME}/.ssh/known_hosts'.format(**globals()))
 
 @task
 def checkout_cbf_jenkins_config():

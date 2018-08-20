@@ -6,6 +6,10 @@ FROM java:openjdk-8-jdk
 MAINTAINER Mpho Mphego <mmphego@ska.ac.za>
 
 # Handle apt deps
+
+# https://stackoverflow.com/questions/22466255/is-it-possible-to-answer-dialog-questions-when-installing-under-docker
+ARG DEBIAN_FRONTEND=noninteractive
+# RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 COPY apt-requirements.txt /
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 RUN apt-get install -y $(grep -vE "^\s*#" apt-requirements.txt | tr "\n" " ")

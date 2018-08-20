@@ -24,7 +24,7 @@ if [ $(echo ${JAVA_VER} | grep 1.8 > /dev/null; printf $?) -ne 0 ]; then
         esac
     done
 else
-    printf "Java Version is supported: ${JAVA_VER}\n"
+    printf "Java Version is supported: ${JAVA_VER}\n\n\n"
     exit 0;
 fi;
 

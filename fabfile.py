@@ -5,6 +5,8 @@ from __future__ import print_function
 
 import __builtin__
 import os
+import time
+from requests import get as geturl
 try:
     from fabric.api import task, sudo, run, cd, local, env, warn_only, get
     from fabric.context_managers import settings
@@ -14,10 +16,22 @@ except ImportError:
     from fabric.api import task, sudo, run, cd, local, env, warn_only, get
     from fabric.context_managers import settings
 
+UPSTART_DIR = '/etc/init.d'
+CBFTEST_USER = "cbf-test"
+CBFTEST_HOME = "/home/{CBFTEST_USER}".format(**locals())
+
 JENKINS_UID = 2000
 JENKINS_USER = os.environ.get('JENKINS_USER', 'jenkins')
 JENKINS_HOME = '/home/{JENKINS_USER}'.format(**locals())
+
+JENKINS_SWARM = "jenkins-swarm-client.sh"
+JENKINS_SWARM_VERSION = 2.0
+JENKINS_SWARM_CLIENT = (
+    'https://raw.githubusercontent.com/ska-sa/CBF-Tests-Automation/master/'
+    '{JENKINS_SWARM}'.format(**locals()))
+
 CONFIG_GIT_REPO = 'git@github.com:ska-sa/CBF-Jenkins-home.git'
+
 
 
 class bcolors:
@@ -26,6 +40,34 @@ class bcolors:
 
 def print(*args, **kwargs):
     __builtin__.print('{0}{2}{1}'.format(bcolors.BoldGreen, bcolors.EndCmd, *args, **kwargs))
+
+@task
+def setup_cbftest_user():
+    print ("NOTE: You will need to enter your SUDO password and hostname")
+    with settings(warn_only=True):
+        print ("Creating new user: {CBFTEST_USER}".format(**globals()))
+        sudo('useradd -d "{CBFTEST_HOME}" -m -s /bin/bash {CBFTEST_USER}'.format(**globals()))
+        sudo('usermod -a -G staff {CBFTEST_USER}'.format(**globals()))
+        print ("Setup a simple password for user: {CBFTEST_USER}".format(**globals()))
+        sudo('passwd {CBFTEST_USER}'.format(**globals()))
+        print("Generating SSH Keys")
+        sudo('ssh-keygen -t rsa -f {CBFTEST_HOME}/.ssh/id_rsa -q -N ""'.format(**globals()),
+            user="{CBFTEST_USER}".format(**globals()))
+        sudo('mkdir -p {CBFTEST_HOME}/jenkinsswarm/fsroot'.format(**globals()),
+            user="{CBFTEST_USER}".format(**globals()))
+        print ("Downloading JAVA Jenkins swarm client v{JENKINS_SWARM_VERSION}".format(**globals()))
+        sudo(
+            "curl --create-dirs -sSLo {CBFTEST_HOME}/jenkinsswarm/swarm-client-jar-with-dependencies.jar"
+            " https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/"
+            "{JENKINS_SWARM_VERSION}/swarm-client-{JENKINS_SWARM_VERSION}-jar-with-"
+            "dependencies.jar".format(**globals()), user="{CBFTEST_USER}".format(**globals()))
+
+        if geturl(JENKINS_SWARM_CLIENT).status_code == 200:
+            print ("Downloading Jenkins Swarm Client shell from github.com")
+            sudo('wget {JENKINS_SWARM_CLIENT} -O {UPSTART_DIR}/{JENKINS_SWARM}'.format(**globals()))
+            sudo('chmod a+x {UPSTART_DIR}/{JENKINS_SWARM}'.format(**globals()))
+            print ("Starting Jenkins Swarm client automagically....")
+            sudo('{UPSTART_DIR}/{JENKINS_SWARM} start'.format(**globals()))
 
 
 @task
@@ -43,8 +85,8 @@ def setup_jenkins_user():
         print("\n\nCopy your `public key` and add new SSH keys to your GitHub profile.")
         print("Paste your ssh public key to your `GitHub ssh keys` in order to access private repos...")
         print("Open link in your browser: https://github.com/settings/ssh/new\n")
+        time.sleep(5)
         sudo('cat {JENKINS_HOME}/.ssh/id_rsa.pub'.format(**globals()))
-        sudo('ssh-keyscan -t rsa github.com >> {JENKINS_HOME}/.ssh/known_hosts'.format(**globals()))
 
 @task
 def checkout_cbf_jenkins_config():

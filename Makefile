@@ -1,10 +1,12 @@
 export JENKINS_USER=jenkins
+export HOSTNAME=$(shell uname -n)
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  install		to install Python dependencies."
+	@echo "  checkJava		to check/install Java runtime."
+	@echo "  install		to check and install Java and Python dependencies."
 	@echo "  docker			to build a docker container"
-	@echo "  fabric			to configure jenkins local volume"
+	@echo "  fabric			to configure jenkins local volume and other dependencies"
 	@echo "  build			to build a docker container and configure jenkins local volume"
 	@echo "  run 			to run pre-built jenkins container"
 	@echo "  start  		to start an existing jenkins container"
@@ -14,16 +16,22 @@ help:
 	@echo "  log      		to see the logs of a running container"
 	@echo "  shell      	to execute a shell on jenkins container"
 
-install:
+checkJava:
+	bash -c "./.checkJava.sh"
+
+install: checkJava
 	pip install --user fabric==1.12.2
 	export PATH=${HOME}/.local/bin:${PATH}
+	@echo
 
 docker:
 	@docker build -t ska-sa-cbf/${JENKINS_USER} .
 
 fabric:
-	@fab setup_jenkins_user
-	@fab -u ${USER} checkout_cbf_jenkins_config
+	@echo "Running Fabric on $(HOSTNAME)"
+	@fab -H ${HOSTNAME} setup_cbftest_user
+	@fab -H ${HOSTNAME} setup_jenkins_user
+	@fab -H ${HOSTNAME} -u ${USER} checkout_cbf_jenkins_config
 
 build: docker fabric
 
@@ -42,7 +50,7 @@ clean: stop
 	@docker rm -v ${JENKINS_USER}
 
 superclean: clean
-	@sudo rm -rf /home/${JENKINS_USER}
+	@docker rmi ska-sa-cbf/${JENKINS_USER}
 	@sudo userdel -f -r ${JENKINS_USER}
 
 log:

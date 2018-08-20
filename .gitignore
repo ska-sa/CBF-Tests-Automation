@@ -4,3 +4,4 @@
 .ropeproject
 .env
 .venv
+*.jar

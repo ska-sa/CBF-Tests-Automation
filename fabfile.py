@@ -48,6 +48,7 @@ def setup_cbftest_user():
         print ("Creating new user: {CBFTEST_USER}".format(**globals()))
         sudo('useradd -d "{CBFTEST_HOME}" -m -s /bin/bash {CBFTEST_USER}'.format(**globals()))
         sudo('usermod -a -G staff {CBFTEST_USER}'.format(**globals()))
+        sudo('chmod a=rwX,o+t /tmp -R')
         print ("Setup a simple password for user: {CBFTEST_USER}".format(**globals()))
         sudo('passwd {CBFTEST_USER}'.format(**globals()))
         print("Generating SSH Keys")

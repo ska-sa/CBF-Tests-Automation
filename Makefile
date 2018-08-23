@@ -36,15 +36,17 @@ fabric:
 build: docker fabric
 
 run:
-	@docker run -d --name=${JENKINS_USER} -p 80:8080 -p 50000:50000 -v /home/${JENKINS_USER}:/var/jenkins_home ska-sa-cbf/${JENKINS_USER}
+	@docker run --restart=on-failure:10 -d --name=${JENKINS_USER} -p 80:8080 -p 50000:50000 -v /home/${JENKINS_USER}:/var/jenkins_home ska-sa-cbf/${JENKINS_USER}
 
 bootstrap: install build run
 
 start:
 	@docker start ${JENKINS_USER}
+	@sudo /etc/init.d/jenkins-swarm-client.sh start
 
 stop:
 	@docker stop ${JENKINS_USER}
+	@sudo /etc/init.d/jenkins-swarm-client.sh stop
 
 clean: stop
 	@docker rm -v ${JENKINS_USER}
@@ -52,6 +54,7 @@ clean: stop
 superclean: clean
 	@docker rmi ska-sa-cbf/${JENKINS_USER}
 	@sudo userdel -f -r ${JENKINS_USER}
+	@sudo rm -rf /etc/init.d/jenkins-swarm-client.sh
 
 log:
 	@docker logs -f ${JENKINS_USER}

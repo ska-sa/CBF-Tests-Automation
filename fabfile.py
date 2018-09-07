@@ -50,7 +50,12 @@ def setup_cbftest_user():
     with settings(warn_only=True):
         print ("Creating new user: {CBFTEST_USER}".format(**globals()))
         sudo('useradd -d "{CBFTEST_HOME}" -m -s /bin/bash {CBFTEST_USER}'.format(**globals()))
-        sudo('usermod -a -G staff {CBFTEST_USER}'.format(**globals()))
+        print ('Adding user to staff and docker groups.')
+        sudo('groupadd docker')
+        sudo('usermod -aG staff {CBFTEST_USER}'.format(**globals()))
+        sudo('usermod -aG docker {CBFTEST_USER}'.format(**globals()))
+        sudo('chgrp docker /usr/bin/docker')
+        sudo('chgrp docker /var/run/docker.sock/')
         sudo('chmod a=rwX,o+t /tmp -R')
         print ("Setup a simple password for user: {CBFTEST_USER}".format(**globals()))
         sudo('passwd {CBFTEST_USER}'.format(**globals()))
@@ -79,6 +84,7 @@ def setup_jenkins_user():
     with settings(warn_only=True):
         sudo('useradd -d "{JENKINS_HOME}" -u {JENKINS_UID} -m -s /bin/bash {JENKINS_USER}'.format(
             **globals()))
+        sudo('usermod -aG docker {JENKINS_USER}'.format(**globals()))
         print ("Setup a password for user: {JENKINS_USER}".format(**globals()))
         sudo('passwd {JENKINS_USER}'.format(**globals()))
         sudo('chmod -R o-xrw {JENKINS_HOME}'.format(**globals()))

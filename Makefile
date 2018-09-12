@@ -36,6 +36,7 @@ fabric:
 build: docker fabric
 
 run:
+	@sudo /etc/init.d/jenkins-swarm-client.sh start
 	@docker run --restart=on-failure:10 -d --name=${JENKINS_USER} -p 8080:8080 -p 50000:50000 -v /home/${JENKINS_USER}:/var/jenkins_home ska-sa-cbf/${JENKINS_USER}
 
 bootstrap: install build run

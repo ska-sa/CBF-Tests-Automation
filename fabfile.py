@@ -77,6 +77,7 @@ def setup_cbftest_user():
             sudo('chmod a+x {UPSTART_DIR}/{JENKINS_SWARM}'.format(**globals()))
             print ("Starting Jenkins Swarm client automagically....")
             sudo('{UPSTART_DIR}/{JENKINS_SWARM} start'.format(**globals()))
+            sudo("echo '{JENKINS_USER}:2345:respawn:/bin/bash {UPSTART_DIR}/{JENKINS_SWARM}' >> /etc/inittab".format(**globals()))
 
 @task
 def setup_jenkins_user():

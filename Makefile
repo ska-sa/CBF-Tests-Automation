@@ -26,36 +26,40 @@ install: checkJava
 
 docker:
 	@docker build -t ska-sa-cbf/${JENKINS_USER} .
-
+sonar:
+	@docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube
 fabric:
 	@echo "Running Fabric on $(HOSTNAME)"
 	@fab -H ${HOSTNAME} setup_cbftest_user
 	@fab -H ${HOSTNAME} setup_jenkins_user
 	@fab -H ${HOSTNAME} -u ${USER} checkout_cbf_jenkins_config
 
-build: docker fabric
+build: docker fabric sonar
 
 run:
-	@sudo /etc/init.d/jenkins-swarm-client.sh start
+	@sudo /etc/init.d/jenkins-swarm-client.sh start || true;
 	@docker run --restart=on-failure:10 -d --name=${JENKINS_USER} -p 8080:8080 -p 50000:50000 -v /home/${JENKINS_USER}:/var/jenkins_home ska-sa-cbf/${JENKINS_USER}
 
 bootstrap: install build run
 
 start:
-	@docker start ${JENKINS_USER}
 	@sudo /etc/init.d/jenkins-swarm-client.sh start
+	@docker start ${JENKINS_USER}
+	@docker start sonarqube || true
 
 stop:
-	@docker stop ${JENKINS_USER}
-	@sudo /etc/init.d/jenkins-swarm-client.sh stop
+	@sudo /etc/init.d/jenkins-swarm-client.sh stop || true
+	@docker stop ${JENKINS_USER} || true
+	@docker stop sonarqube || true
 
 clean: stop
-	@docker rm -v ${JENKINS_USER}
+	@docker rm -v ${JENKINS_USER} || true
+	@docker rm -v sonarqube || true
 
 superclean: clean
-	@docker rmi ska-sa-cbf/${JENKINS_USER}
-	@sudo userdel -f -r ${JENKINS_USER}
-	@sudo rm -rf /etc/init.d/jenkins-swarm-client.sh
+	@docker rmi ska-sa-cbf/${JENKINS_USER} || true
+	@sudo userdel -f -r ${JENKINS_USER} || true
+	@sudo rm -rf /etc/init.d/jenkins-swarm-client.sh || true
 
 log:
 	@docker logs -f ${JENKINS_USER}

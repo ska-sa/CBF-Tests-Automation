@@ -95,7 +95,9 @@ def setup_jenkins_user():
         print("\n\nCopy your `public key` and add new SSH keys to your GitHub profile.")
         print("Paste your ssh public key to your `GitHub ssh keys` in order to access private repos...")
         print("Open link in your browser: https://github.com/settings/ssh/new\n")
-        time.sleep(5)
+        while True:
+            if raw_input("Press any Keys & Enter to continue..."):
+                break
         sudo('cat {JENKINS_HOME}/.ssh/id_rsa.pub'.format(**globals()))
 
 @task

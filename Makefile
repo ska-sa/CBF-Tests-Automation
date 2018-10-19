@@ -31,7 +31,7 @@ help:
 	@echo "  superclean     		to clean and delete jenkins user and /home/jenkins"
 
 checkJava:
-	bash -c "./.checkJava.sh"
+	bash -c "./.checkJava.sh" || true
 
 install: checkJava
 	pip install --user fabric==1.12.2
@@ -42,11 +42,11 @@ docker:
 	@docker build -t ska-sa-cbf/${JENKINS_USER} .
 
 sonar:
-	@docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube
+	@docker run --restart=on-failure:10 -d --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube
 
 portainer:
 	@docker volume create --name=portainer_data
-	@docker run -d --name portainer -p 9001:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+	@docker run --restart=on-failure:10 -d --name portainer -p 9001:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
 
 fabric:
 	@echo "Running Fabric on $(HOSTNAME)"

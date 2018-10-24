@@ -93,12 +93,12 @@ def setup_jenkins_user():
         sudo('ssh-keygen -t rsa -f {JENKINS_HOME}/.ssh/id_rsa -q -N ""'.format(**globals()),
             user="{JENKINS_USER}".format(**globals()))
         print("\n\nCopy your `public key` and add new SSH keys to your GitHub profile.")
+        sudo('cat {JENKINS_HOME}/.ssh/id_rsa.pub'.format(**globals()))
         print("Paste your ssh public key to your `GitHub ssh keys` in order to access private repos...")
         print("Open link in your browser: https://github.com/settings/ssh/new\n")
         while True:
             if raw_input("Press any Keys & Enter to continue..."):
                 break
-        sudo('cat {JENKINS_HOME}/.ssh/id_rsa.pub'.format(**globals()))
 
 @task
 def checkout_cbf_jenkins_config():

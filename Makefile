@@ -1,5 +1,5 @@
 export JENKINS_USER=jenkins
-export HOSTNAME=$(shell uname -n)
+export HOSTNAME=$(shell hostname -i)
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"

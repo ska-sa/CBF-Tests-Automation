@@ -35,7 +35,7 @@ checkJava:
 
 install: checkJava
 	pip install --user fabric==1.12.2
-	export PATH=${HOME}/.local/bin:${PATH}
+	export PATH=${HOME}/.local/bin:${PATH} || true
 	@echo
 
 docker:

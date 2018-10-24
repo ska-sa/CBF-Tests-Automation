@@ -34,8 +34,7 @@ checkJava:
 	bash -c "./.checkJava.sh" || true
 
 install: checkJava
-	pip install --user fabric==1.12.2
-	export PATH=${HOME}/.local/bin:${PATH} || true
+	sudo pip install fabric==1.12.2
 	@echo
 
 docker:

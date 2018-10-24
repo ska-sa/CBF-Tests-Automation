@@ -3,6 +3,7 @@ export HOSTNAME=$(shell hostname -i)
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  bootstrap			One-liner to make everything work!!!"
 	@echo "  checkJava			to check/install Java runtime."
 	@echo "  docker			to build a cbf-test/jenkins docker container"
 	@echo "  build				to build a docker container, configure jenkins local volume, configure sonarqube and portainer"
@@ -93,7 +94,7 @@ clean: stop_all
 
 superclean: clean
 	@docker rmi ska-sa-cbf/${JENKINS_USER} || true
-	@docker rmi portainer || true
+	@docker rmi portainer/portainer || true
 	@sudo userdel -f -r ${JENKINS_USER} || true
 	@sudo rm -rf /etc/init.d/jenkins-swarm-client.sh || true
 

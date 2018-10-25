@@ -41,6 +41,13 @@ VOLUME /var/jenkins_home
 # or config file with your custom jenkins Docker image.
 RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-angent-port.groovy
+# Copy in local config files
+# COPY plugins.sh /usr/local/bin/plugins.sh
+# COPY install-plugins.sh /usr/local/bin/install-plugins.sh
+# RUN chmod +x /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy \
+#    && chmod +x /usr/local/bin/plugins.sh \
+#    && chmod +x /usr/local/bin/jenkins.sh \
+#    && chmod +x /usr/local/bin/install-plugins.sh
 
 # Jenkins Mirrors: http://mirrors.jenkins.io/status.html
 ENV JENKINS_VERSION 2.91
@@ -57,5 +64,6 @@ EXPOSE 50000
 
 USER jenkins
 COPY jenkins.sh /usr/local/bin/jenkins.sh
+RUN chmod +x /usr/local/bin/jenkins.sh
 ENTRYPOINT ["/usr/local/bin/jenkins.sh"]
 

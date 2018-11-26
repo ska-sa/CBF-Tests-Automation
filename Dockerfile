@@ -1,29 +1,27 @@
-# This is a copy of https://github.com/cloudbees/jenkins-ci.org-docker/ so that
-# we can change the UID of the JENKINS user to something more amenable, otherwise
-# we could just have done FROM jenkins:{version}
+# Usage
+# export JENKINS_USER="jenkins"
+# docker run --restart=on-failure:10 -d --name=${JENKINS_USER} -p 8080:8080 -p 50000:50000 -v /home/${JENKINS_USER}:/var/jenkins_home ska-sa-cbf/${JENKINS_USER}
 
 FROM java:openjdk-8-jdk
-MAINTAINER Mpho Mphego <mmphego@ska.ac.za>
-
-# Handle apt deps
-
-# https://stackoverflow.com/questions/22466255/is-it-possible-to-answer-dialog-questions-when-installing-under-docker
+LABEL maintainer="Mpho Mphego <mmphego@ska.ac.za>"
 ARG DEBIAN_FRONTEND=noninteractive
 # RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 COPY apt-requirements.txt /
-RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
-RUN apt-get install -y $(grep -vE "^\s*#" apt-requirements.txt | tr "\n" " ")
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends apt-utils && \
+    apt-get install -y --no-install-recommends $(grep -vE "^\s*#" apt-requirements.txt | tr "\n" " ") && \
+    apt-get clean
 
 # Handle python deps
-RUN curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && python /tmp/get-pip.py
-RUN pip install -U virtualenv
+RUN curl https://bootstrap.pypa.io/get-pip.py | python && \
+    pip install --no-cache-dir --disable-pip-version-check -U virtualenv
 
 ENV JENKINS_HOME /var/jenkins_home
 ENV JENKINS_UID 2000
 # Jenkins is ran with user `jenkins`, uid = JENKINS_UID
 # If you bind mount a volume from host/volume from a data container,
 # ensure you use same uid
-RUN useradd -d "$JENKINS_HOME" -u "$JENKINS_UID" -m -s /bin/bash jenkins
+RUN useradd -d "${JENKINS_HOME}" -u "${JENKINS_UID}" -m -s /bin/bash jenkins
 
 ## Allow jenkins user to use sudo to perform a limited subset of commands
 # without a password such as installing new packages.
@@ -62,7 +60,7 @@ RUN bash -c "ping -c 5 www.google.com"
 RUN wget "http://mirrors.jenkins.io/war-stable/${JENKINS_VERSION}/jenkins.war" -O /usr/share/jenkins/jenkins.war
 #RUN axel "http://mirrors.jenkins-ci.org/war/${JENKINS_VERSION}/jenkins.war" -o /usr/share/jenkins/jenkins.war
 ENV JENKINS_UC https://updates.jenkins-ci.org
-RUN chown -R jenkins "$JENKINS_HOME" /usr/share/jenkins/ref
+RUN chown -R jenkins "${JENKINS_HOME}" /usr/share/jenkins/ref
 
 # for main web interface:
 EXPOSE 8080

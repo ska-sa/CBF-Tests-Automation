@@ -1,6 +1,7 @@
 
 # CBF Automated Test Framework
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/fbfe4e35e4584901a2916a55ca6fd994)](https://app.codacy.com/app/mmphego/CBF-Tests-Automation?utm_source=github.com&utm_medium=referral&utm_content=ska-sa/CBF-Tests-Automation&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/ska-sa/CBF-Tests-Automation.svg?branch=master)](https://travis-ci.org/ska-sa/CBF-Tests-Automation)
 
 

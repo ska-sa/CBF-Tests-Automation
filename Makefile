@@ -56,6 +56,8 @@ fabric:
 
 build: docker fabric sonar portainer
 
+buildcontainers: docker sonar portainer
+
 run:
 	@sudo /etc/init.d/jenkins-swarm-client.sh start || true;
 	@docker run --restart=on-failure:10 -d --name=${JENKINS_USER} -p 8080:8080 -p 50000:50000 -v /home/${JENKINS_USER}:/var/jenkins_home ska-sa-cbf/${JENKINS_USER}

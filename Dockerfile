@@ -52,7 +52,7 @@ COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-angent-port.groo
 # Jenkins Mirrors: http://mirrors.jenkins.io/status.html
 ENV JENKINS_VERSION 2.91
 RUN bash -c "ping -c 5 www.google.com"
-RUN bash -c "axel -q -n 100 'https://mirrors.tuna.tsinghua.edu.cn/jenkins/war/${JENKINS_VERSION}/jenkins.war' -o /usr/share/jenkins/jenkins.war"
+RUN bash -c "wget 'https://mirrors.tuna.tsinghua.edu.cn/jenkins/war/${JENKINS_VERSION}/jenkins.war' -O /usr/share/jenkins/jenkins.war"
 #RUN axel "http://mirrors.jenkins-ci.org/war/${JENKINS_VERSION}/jenkins.war" -o /usr/share/jenkins/jenkins.war
 ENV JENKINS_UC https://updates.jenkins-ci.org
 RUN chown -R jenkins "$JENKINS_HOME" /usr/share/jenkins/ref
@@ -64,6 +64,6 @@ EXPOSE 50000
 
 USER jenkins
 COPY jenkins.sh /usr/local/bin/jenkins.sh
-RUN chmod +x /usr/local/bin/jenkins.sh
-ENTRYPOINT ["/usr/local/bin/jenkins.sh"]
+#RUN chmod +x /usr/local/bin/jenkins.sh
+ENTRYPOINT ["/bin/bash", "/usr/local/bin/jenkins.sh"]
 

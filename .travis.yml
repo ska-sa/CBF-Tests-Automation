@@ -1,0 +1,13 @@
+language: c
+sudo: required
+
+services:
+    - docker
+notifications:
+  email: false
+
+install:
+  - make testbootstrap
+
+script:
+- docker ps -a

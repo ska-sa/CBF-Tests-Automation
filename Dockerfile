@@ -52,7 +52,10 @@ COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-angent-port.groo
 # Jenkins Mirrors: http://mirrors.jenkins.io/status.html
 ENV JENKINS_VERSION 2.91
 RUN bash -c "ping -c 5 www.google.com"
+
+# Backup link
 RUN bash -c "wget 'https://mirrors.tuna.tsinghua.edu.cn/jenkins/war/${JENKINS_VERSION}/jenkins.war' -O /usr/share/jenkins/jenkins.war"
+RUN bash -c "wget 'http://mirrors.jenkins-ci.org/war/${JENKINS_VERSION}/jenkins.war' -O /usr/share/jenkins/jenkins.war"
 #RUN axel "http://mirrors.jenkins-ci.org/war/${JENKINS_VERSION}/jenkins.war" -o /usr/share/jenkins/jenkins.war
 ENV JENKINS_UC https://updates.jenkins-ci.org
 RUN chown -R jenkins "$JENKINS_HOME" /usr/share/jenkins/ref

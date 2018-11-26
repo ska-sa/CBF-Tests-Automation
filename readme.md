@@ -1,6 +1,9 @@
 
 # CBF Automated Test Framework
 
+[![Build Status](https://travis-ci.org/ska-sa/CBF-Tests-Automation.svg?branch=master)](https://travis-ci.org/ska-sa/CBF-Tests-Automation)
+
+
 Define a Dockerfiles that can build a docker instances useful for running Automated CBF Tests running on Jenkins CI.
 
 The files are:

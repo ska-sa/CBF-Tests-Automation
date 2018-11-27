@@ -5,7 +5,7 @@ from __future__ import print_function
 
 import __builtin__
 import os
-import time
+# import time
 # import signal
 from requests import get as geturl
 try:

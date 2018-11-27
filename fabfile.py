@@ -6,7 +6,7 @@ from __future__ import print_function
 import __builtin__
 import os
 import time
-import signal
+# import signal
 from requests import get as geturl
 try:
     from fabric.api import task, sudo, run, cd, local, env, warn_only, get
@@ -34,8 +34,6 @@ JENKINS_SWARM_CLIENT = (
 CONFIG_GIT_REPO = 'git@github.com:ska-sa/CBF-Jenkins-home.git'
 
 JENKINS_LOCALPORT = 8080
-PORTFORWARDING_URL = 'serveo.net'
-PORTFORWARDING_LOG = '.jenkins_http.log'
 
 class bcolors:
     BoldGreen = '\033[92m\033[1m'
@@ -118,17 +116,6 @@ def checkout_cbf_jenkins_config():
             sudo('git checkout master -f ', user="{JENKINS_USER}".format(**globals()))
             sudo('git pull -f ', user="{JENKINS_USER}".format(**globals()))
             sudo('git config --global push.default simple ', user="{JENKINS_USER}".format(**globals()))
-
-@task
-def expose_jenkins_http():
-    print ('Exposing localhost port to the interweb')
-    local(
-        'ssh -R 8080:localhost:{JENKINS_LOCALPORT} {PORTFORWARDING_URL} '
-        '> {PORTFORWARDING_LOG} 2>&1 &'.format(**globals()))
-    time.sleep(5)
-    with open(PORTFORWARDING_LOG) as f:
-        url_link = [i.rstrip().split(' ')[-1] for i in f.readlines() if 'https://' in i]
-    print ("Current URL: {url_link}".format(**locals()))
 
 @task
 def kill_jenkins_http():

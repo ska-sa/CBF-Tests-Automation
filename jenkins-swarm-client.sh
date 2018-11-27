@@ -19,7 +19,7 @@ USER_HOME="/home/${USER}"
 SWARM_HOME="${USER_HOME}/jenkinsswarm"
 JAR="${SWARM_HOME}/swarm-client-jar-with-dependencies.jar"
 LOG="${SWARM_HOME}/jenkins-swarm-client.log"
-PASSWORD_FILE="${SWARM_HOME}/jenkins_password"
+# PASSWORD_FILE="${SWARM_HOME}/jenkins_password"
 MASTER="http://localhost:8080"
 # Serious security risk
 USERNAME="user"
@@ -50,7 +50,7 @@ OPTS="-description \"${DESCRIPTION}\" \
 
 PIDFILE="/var/run/jenkins-swarm-client.pid"
 ARGS="-server -Djava.awt.headless=true -jar $JAR $OPTS"
-JAVA_HOME="/etc/alternatives/java"
+# JAVA_HOME="/etc/alternatives/java"
 DAEMON="/usr/bin/java"
 
 test -x $DAEMON || exit 1
@@ -78,7 +78,7 @@ case $1 in
         ;;
    status)
         status_of_proc -p $PIDFILE "$DAEMON" jenkins-swarm-client
-  RETVAL=$?
+#   RETVAL=$?
   ;;
 
    *)

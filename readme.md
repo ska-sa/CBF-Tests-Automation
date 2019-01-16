@@ -19,7 +19,7 @@ The files are:
 
   More documentation: [https://wiki.jenkins.io/display/JENKINS/Swarm+Plugin](https://wiki.jenkins.io/display/JENKINS/Swarm+Plugin)
 
-##   Howtos
+##   Howto
 
 Starting from scratch, the subsection steps need to be performed in order. The
 `host` referred to below is the server/VM that will be hosting the Jenkins

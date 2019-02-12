@@ -3,7 +3,7 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fbfe4e35e4584901a2916a55ca6fd994)](https://app.codacy.com/app/mmphego/CBF-Tests-Automation?utm_source=github.com&utm_medium=referral&utm_content=ska-sa/CBF-Tests-Automation&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/ska-sa/CBF-Tests-Automation.svg?branch=master)](https://travis-ci.org/ska-sa/CBF-Tests-Automation)
-
+[![LICENSE](https://img.shields.io/github/license/ska-sa/CBF-Tests-Automation.svg?style=flat)](LICENSE)
 
 Define a Dockerfiles that can build a docker instances useful for running Automated CBF Tests running on Jenkins CI.
 
